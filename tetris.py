@@ -56,7 +56,8 @@ def check_collision(tetromino, grid):
     for y, row in enumerate(tetromino.shape):
         for x, cell in enumerate(row):
             if cell:
-                if tetromino.x + x < 0 or tetromino.x + x >= grid_width or tetromino.y + y >= grid_height or (tetromino.y + y < grid_height and grid[tetromino.y + y][tetromino.x + x]):
+                nx, ny = tetromino.x + x, tetromino.y + y
+                if nx < 0 or nx >= grid_width or ny >= grid_height or (ny < grid_height and grid[ny][nx]):
                     return True
     return False
 
