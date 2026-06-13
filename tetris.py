@@ -84,6 +84,8 @@ def main():
     tetromino = Tetromino(grid_width // 2 - 2, 0, random.choice(shapes))
     game_over = False
     score = 0
+    drop_time = 0
+    drop_speed = 500
 
     while not game_over:
         screen.fill((0, 0, 0))
@@ -97,21 +99,28 @@ def main():
                     tetromino.move(-1, 0)
                 elif event.key == pygame.K_RIGHT and not check_collision(tetromino, grid):
                     tetromino.move(1, 0)
-                elif event.key == pygame.K_DOWN and not check_collision(tetromino, grid):
-                    tetromino.move(0, 1)
+                elif event.key == pygame.K_DOWN:
+                    if not check_collision(tetromino, grid):
+                        tetromino.move(0, 1)
                 elif event.key == pygame.K_UP:
                     rotated_tetromino = Tetromino(tetromino.x, tetromino.y, [list(row) for row in zip(*tetromino.shape[::-1])])
                     if not check_collision(rotated_tetromino, grid):
                         tetromino = rotated_tetromino
 
-        tetromino.move(0, 1)
-        if check_collision(tetromino, grid):
-            merge_tetromino(tetromino, grid)
-            grid, lines_cleared = clear_lines(grid)
-            score += lines_cleared * 10
-            tetromino = Tetromino(grid_width // 2 - 2, 0, random.choice(shapes))
-            if check_collision(tetromino, grid):
-                game_over = True
+        drop_time += clock.get_rawtime()
+        clock.tick()
+
+        if drop_time > drop_speed:
+            drop_time = 0
+            if not check_collision(tetromino, grid):
+                tetromino.move(0, 1)
+            else:
+                merge_tetromino(tetromino, grid)
+                grid, lines_cleared = clear_lines(grid)
+                score += lines_cleared * 10
+                tetromino = Tetromino(grid_width // 2 - 2, 0, random.choice(shapes))
+                if check_collision(tetromino, grid):
+                    game_over = True
 
         draw_tetromino(tetromino)
 
@@ -119,7 +128,6 @@ def main():
         screen.blit(score_text, (10, 10))
 
         pygame.display.flip()
-        clock.tick(5)
 
     pygame.quit()
 
