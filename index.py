@@ -1,1 +1,1 @@
-print("Hello, world!")
+pip install pygame
